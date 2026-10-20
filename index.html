@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Vũ Trụ Quả Cầu Gấu & Hiệu Ứng Hoàn Hảo</title>
+    <title>space_image</title>
     <!-- Tải Font Quicksand & Itim cực cute cho bức thư -->
     <link href="https://fonts.googleapis.com/css2?family=Itim&family=Pacifico&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
     <style>
@@ -232,7 +232,7 @@
     <div id="orientationOverlay">
         <div class="phone-rotate-icon">📱🔄</div>
         <h2>xoay ngang màn hình</h2>
-        <p>Để có trải nghiệm xem Vũ Trụ 3D hoàn hảo nhất nhé! 💖</p>
+        <p>Để xem 💖</p>
     </div>
 
     <canvas id="canvas"></canvas>
@@ -874,7 +874,7 @@
                     let countDown = Math.max(0, Math.ceil(6 - (Date.now() - insideSphereStartTime) / 1000));
                     ctx.fillText(`✨ ${countDown}s ✨`, cx, height - 50);
                 } else {
-                    ctx.fillText("✨:)))✨", cx, height - 50);
+                    ctx.fillText("✨click 💌 để đọc thư✨", cx, height - 50);
                 }
                 ctx.restore();
 
@@ -914,7 +914,7 @@
 
                     ctx.font = '11px "Quicksand", sans-serif';
                     ctx.fillStyle = '#ff99cc';
-                    ctx.fillText("mở thư", drawX, letter.y + 24);
+                    ctx.fillText("", drawX, letter.y + 24);
                     ctx.restore();
                 });
             }
