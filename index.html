@@ -2,29 +2,51 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Vũ Trụ Quả Cầu Gấu & Hiệu Ứng Hoàn Hảo</title>
     <!-- Tải Font Quicksand & Itim cực cute cho bức thư -->
     <link href="https://fonts.googleapis.com/css2?family=Itim&family=Pacifico&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
-        body, html {
-            width: 100%; height: 100%;
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            user-select: none; 
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
             background-color: #030303;
             overflow: hidden;
             font-family: 'Pacifico', cursive, sans-serif;
             touch-action: none;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
         canvas {
-            display: block; position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+            display: block; 
+            position: absolute;
+            top: 0; left: 0; 
+            width: 100vw; 
+            height: 100vh;
+            height: 100dvh; 
+            z-index: 1;
         }
 
         /* 📱 OVERLAY BẮT XOAY NGANG MÀN HÌNH BẰNG ĐIỆN THOẠI */
         #orientationOverlay {
             position: fixed;
             top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            width: 100vw; 
+            height: 100vh;
+            height: 100dvh;
             background-color: #030303;
             z-index: 99999;
             display: none;
@@ -321,6 +343,18 @@
 
         let typingInterval = null;
 
+        // 🚀 TỰ ĐỘNG BẬT CHẾ ĐỘ TOÀN MÀN HÌNH ĐỂ ẨN THANH URL CỦA TRÌNH DUYỆT
+        function requestFullScreen() {
+            const docEl = document.documentElement;
+            if (docEl.requestFullscreen) {
+                docEl.requestFullscreen().catch(() => {});
+            } else if (docEl.webkitRequestFullscreen) {
+                docEl.webkitRequestFullscreen();
+            } else if (docEl.msRequestFullscreen) {
+                docEl.msRequestFullscreen();
+            }
+        }
+
         function resize() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
@@ -443,6 +477,7 @@
 
         function startInteract(clientX, clientY) {
             clickValid = true; 
+            requestFullScreen(); // Kích hoạt ẩn thanh địa chỉ URL trình duyệt
 
             if (state === 'PLAYING') {
                 isDragging = true;
