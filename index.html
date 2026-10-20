@@ -869,7 +869,7 @@
                 ctx.shadowBlur = 10;
                 ctx.textAlign = 'center';
                 if (!isInsideSphere) {
-                    ctx.fillText("✨ Kéo thả để xoay 360 độ ngắm nhìn - Click để xem ✨", cx, height - 50);
+                    ctx.fillText("✨ Kéo thả để xoay 360 độ - Click để xem ✨", cx, height - 50);
                 } else if (!bearsScattered) {
                     let countDown = Math.max(0, Math.ceil(6 - (Date.now() - insideSphereStartTime) / 1000));
                     ctx.fillText(`✨ ${countDown}s ✨`, cx, height - 50);
@@ -914,7 +914,7 @@
 
                     ctx.font = '11px "Quicksand", sans-serif';
                     ctx.fillStyle = '#ff99cc';
-                    ctx.fillText("click vào đây", drawX, letter.y + 24);
+                    ctx.fillText("mở thư", drawX, letter.y + 24);
                     ctx.restore();
                 });
             }
@@ -930,7 +930,7 @@
                 ctx.shadowColor = '#ff1a75';
                 ctx.shadowBlur = 12;
                 ctx.textAlign = 'center';
-                ctx.fillText(`✨ Tự động mở sau ${remainingTime}s ✨`, hintX, hintY + 45);
+                ctx.fillText(`✨ chuyển cảnh sau  ${remainingTime}s ✨`, hintX, hintY + 45);
                 ctx.restore();
             }
 
