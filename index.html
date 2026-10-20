@@ -872,9 +872,9 @@
                     ctx.fillText("✨ Kéo thả để xoay 360 độ ngắm nhìn - Click để xem ✨", cx, height - 50);
                 } else if (!bearsScattered) {
                     let countDown = Math.max(0, Math.ceil(6 - (Date.now() - insideSphereStartTime) / 1000));
-                    ctx.fillText(`✨ Bạn đang ở bên trong! Các chú gấu sẽ bay lượn sau ${countDown}s ✨`, cx, height - 50);
+                    ctx.fillText(`✨ ${countDown}s ✨`, cx, height - 50);
                 } else {
-                    ctx.fillText("✨ Các chú gấu đang dạo chơi quay quanh màn hình ✨", cx, height - 50);
+                    ctx.fillText("✨:)))✨", cx, height - 50);
                 }
                 ctx.restore();
 
