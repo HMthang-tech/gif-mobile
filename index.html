@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vũ Trụ Quả Cầu Gấu & Hiệu Ứng Hoàn Hảo</title>
+    <!-- Tải Font Quicksand & Itim cực cute cho bức thư -->
+    <link href="https://fonts.googleapis.com/css2?family=Itim&family=Pacifico&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body, html {
+            width: 100%; height: 100%;
+            background-color: #030303;
+            overflow: hidden;
+            font-family: 'Pacifico', cursive, sans-serif;
+            touch-action: none;
+        }
+        canvas {
+            display: block; position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+        }
+
+        /* 📱 OVERLAY BẮT XOAY NGANG MÀN HÌNH BẰNG ĐIỆN THOẠI */
+        #orientationOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: #030303;
+            z-index: 99999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ff1a75;
+            text-align: center;
+            padding: 20px;
+            font-family: 'Quicksand', 'Itim', sans-serif;
+        }
+        #orientationOverlay .phone-rotate-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: rotateAnimation 2s infinite ease-in-out;
+        }
+        #orientationOverlay h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #ff3385;
+            font-family: 'Pacifico', cursive, sans-serif;
+        }
+        #orientationOverlay p {
+            font-size: 15px;
+            color: #ff99cc;
+            font-weight: 600;
+        }
+        @keyframes rotateAnimation {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-90deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* Tự động bật thông báo khi ở chế độ xoay dọc trên điện thoại/máy tính bảng */
+        @media screen and (orientation: portrait) and (max-width: 900px) {
+            #orientationOverlay {
+                display: flex !important;
+            }
+        }
+
+        /* HỘP THƯ HIỂN THỊ NỘI DUNG */
+        #letterModal {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 330px; max-width: 90%;
+            background: linear-gradient(135deg, #fff0f5, #ffe4e1);
+            border: 3px solid #ff1a75;
+            border-radius: 20px;
+            padding: 25px 20px 20px 20px;
+            box-shadow: 0 15px 35px rgba(255, 26, 117, 0.4);
+            z-index: 10;
+            text-align: center;
+            font-family: 'Pacifico', cursive, sans-serif;
+            color: #cc0044;
+            display: none;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        #letterModal.show {
+            display: block;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        /* 🎀 VIỀN NÉT ĐỨT VINTAGE BÊN TRONG HỘP THƯ */
+        #letterModal::after {
+            content: '';
+            position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border: 2px dashed #ff99cc;
+            border-radius: 14px;
+            pointer-events: none;
+        }
+
+        /* 💖 TRÁI TIM ĐU ĐƯA Ở GÓC TRÁI THƯ */
+        .swaying-hearts {
+            position: absolute;
+            top: -22px;
+            left: -18px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            pointer-events: none;
+            z-index: 12;
+        }
+        .swaying-hearts span {
+            display: inline-block;
+            font-size: 26px;
+            animation: swayHeart 2.2s infinite ease-in-out alternate;
+            filter: drop-shadow(0 4px 8px rgba(255, 26, 117, 0.5));
+        }
+        .swaying-hearts span:nth-child(2) {
+            font-size: 19px;
+            animation-delay: 0.4s;
+            animation-duration: 1.8s;
+        }
+        .swaying-hearts span:nth-child(3) {
+            font-size: 22px;
+            animation-delay: 0.8s;
+            animation-duration: 2.5s;
+        }
+        @keyframes swayHeart {
+            0% { transform: translateY(0) rotate(-15deg) scale(1); }
+            100% { transform: translateY(-12px) rotate(18deg) scale(1.18); }
+        }
+
+        /* 💗 KHUNG TEXT VÀ 4 TRÁI TIM Ở 4 GÓC CỦA TEXT */
+        .text-container {
+            position: relative;
+            padding: 5px 10px;
+            margin: 5px 0;
+            z-index: 2;
+        }
+        .text-corner {
+            position: absolute;
+            font-size: 15px;
+            pointer-events: none;
+            z-index: 12;
+            animation: pulseTextCorner 1.6s infinite ease-in-out alternate;
+        }
+        .text-corner.tl { top: -6px; left: 0px; }
+        .text-corner.tr { top: -6px; right: 0px; }
+        .text-corner.bl { bottom: -6px; left: 0px; }
+        .text-corner.br { bottom: -6px; right: 48px; }
+
+        @keyframes pulseTextCorner {
+            0% { transform: scale(0.9) rotate(-10deg); }
+            100% { transform: scale(1.3) rotate(12deg); }
+        }
+
+        /* 🐻 GIF ĐỘNG CUTE NỀN TIỆP VỚI NỀN THƯ */
+        .corner-gif {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            width: 55px;
+            height: 55px;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 15;
+            mix-blend-mode: multiply;
+            background-color: transparent;
+            filter: drop-shadow(0 2px 4px rgba(255, 26, 117, 0.2));
+        }
+
+        #letterModal h3 {
+            margin-bottom: 8px;
+            font-size: 22px;
+            color: #ff0055;
+            position: relative;
+            z-index: 2;
+        }
+        #letterModal p {
+            font-size: 16px;
+            line-height: 1.7;
+            letter-spacing: 0.8px;
+            color: #4a4a4a;
+            font-family: 'Quicksand', 'Itim', cursive, sans-serif;
+            font-weight: 700;
+            min-height: 60px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            position: relative;
+            z-index: 2;
+        }
+        #letterModal .close-hint {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #ff1a75;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            opacity: 0.8;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- OVERLAY XOAY NGANG MÀN HÌNH CHO ĐIỆN THOẠI -->
+    <div id="orientationOverlay">
+        <div class="phone-rotate-icon">📱🔄</div>
+        <h2>Vui lòng xoay ngang màn hình</h2>
+        <p>Để có trải nghiệm xem Vũ Trụ 3D hoàn hảo nhất nhé! 💖</p>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <!-- HỘP THƯ HIỂN THỊ NỘI DUNG -->
+    <div id="letterModal" onclick="closeLetter()">
+        <!-- TRÁI TIM ĐU ĐƯA Ở GÓC TRÁI -->
+        <div class="swaying-hearts">
+            <span>💖</span>
+            <span>💕</span>
+            <span>💗</span>
+        </div>
+
+        <h3>💌 Gửi Ngây 💌</h3>
+
+        <!-- KHUNG TEXT VỚI 4 TRÁI TIM Ở 4 GÓC -->
+        <div class="text-container">
+            <div class="text-corner tl">💖</div>
+            <div class="text-corner tr">💕</div>
+            <div class="text-corner bl">💗</div>
+            <div class="text-corner br">💓</div>
+            <p id="letterContent"></p>
+        </div>
+
+        <!-- GIF CUTE TIỆP MÀU NỀN VỚI THƯ -->
+        <img id="letterGif" class="corner-gif" src="https://i.pinimg.com/originals/46/34/21/4634212f6d84a54be4b58775ba1da53c.gif" alt="Cute GIF">
+
+        <div class="close-hint">(Đóng)</div>
+    </div>
+
+    <script>
+        const CUSTOM_TEXT = "20 tháng 10\nvui vẻ !";
+
+        // 🎵 ĐƯỜNG DẪN NHẠC
+        const MUSIC_URL = "snaptik.vn_7512447152891628801.mp3";
+        const bgMusic = new Audio(MUSIC_URL);
+        bgMusic.loop = true;
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, cx, cy;
+        let btnX, btnY, hintX, hintY;
+
+        const redHeartColors = ['#ff0033', '#e60026', '#cc0020', '#ff1a47'];
+        const pinkRedHeartColors = ['#ff1a75', '#ff3385', '#ff4d94', '#ff0033', '#e60026'];
+
+        function createHeartSprite(color) {
+            let c = document.createElement('canvas');
+            c.width = 16; c.height = 16;
+            let x = c.getContext('2d');
+            x.fillStyle = color;
+            x.shadowColor = color;
+            x.shadowBlur = 4;
+            x.beginPath();
+            x.moveTo(8, 5);
+            x.bezierCurveTo(8,0, 0,0, 0,6);
+            x.bezierCurveTo(0,11, 8,16, 8,16);
+            x.bezierCurveTo(8,16, 16,11, 16,6);
+            x.bezierCurveTo(16,0, 8,0, 8,5);
+            x.fill();
+            return c;
+        }
+
+        const redHeartSprites = redHeartColors.map(createHeartSprite);
+        const pinkRedHeartSprites = pinkRedHeartColors.map(createHeartSprite);
+
+        // DANH SÁCH ẢNH TRÊN QUẢ CẦU
+        const IMAGE_URLS = [
+             "Screenshot 2026-10-19 203422.png", 
+             "Screenshot 2026-10-19 203735.png"
+        ];
+
+        const loadedImages = IMAGE_URLS.map(url => {
+            let img = new Image();
+            img.src = url;
+            return img;
+        });
+
+        let particles3D = [];
+        let bearSphereParticles = []; 
+        let fallingLetters = []; 
+        let bgHearts = []; 
+        let textScale = 0;
+        let isExploded = false; 
+        let explodeStartTime = 0; 
+        let globalAlphaVal = 1.0; 
+        
+        // CÁC BIẾN QUẢN LÝ GIAI ĐOẠN GẤU
+        let showBearsStage = false; 
+        let isInsideSphere = false; 
+        let insideSphereStartTime = 0;
+        let bearsScattered = false;
+
+        const letterMessages = [
+            "Chúc em 20/10 thật vui vẻ và hạnh phúc.Mong rằng mỗi ngày của em đều ngập tràn tiếng cười,luôn xinh đẹp,luôn giữ được nụ cười trên môi và được mọi người yêu thương thật nhiều. Chúc em có một ngày 20/10 thật ý nghĩa và đáng nhớ nhé! 🌷🌸"
+        ];
+
+        let state = 'WAITING'; 
+        let holdProgress = 0;
+        let startTime = 0;
+        let camRotX = 0.15, camRotY = 0;
+        
+        // BIẾN QUẢN LÝ TƯƠNG TÁC KÉO/CLICK
+        let isDragging = false, isHoldingButton = false;
+        let lastMouseX = 0, lastMouseY = 0;
+        let dragStartX = 0, dragStartY = 0;
+        let clickValid = false;
+
+        let typingInterval = null;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            cx = width / 2;
+            cy = height / 2;
+            btnX = cx;
+            btnY = height - 100;
+            hintX = cx;
+            hintY = height - 100;
+
+            if (state === 'WAITING') {
+                particles3D = [];
+                const sphereRadius = 180;
+                
+                for(let i=0; i<1500; i++) {
+                    let u = Math.random(), v = Math.random();
+                    let theta = u * 2.0 * Math.PI;
+                    let phi = Math.acos(2.0 * v - 1.0);
+                    let r = Math.cbrt(Math.random()) * sphereRadius;
+                    particles3D.push(createParticle(r, theta, phi, true));
+                }
+
+                for(let i=0; i<3000; i++) {
+                    let x = (Math.random() - 0.5) * 3500;
+                    let y = (Math.random() - 0.5) * 3500;
+                    let z = (Math.random() - 0.5) * 3500;
+                    if (Math.hypot(x, y, z) < sphereRadius + 50) continue; 
+                    
+                    particles3D.push({
+                        x: x, y: y, z: z,
+                        baseX: x, baseY: y, baseZ: z,
+                        vx: 0, vy: 0, vz: 0,
+                        size: Math.random() * 1.0 + 0.3,
+                        isRed: false,
+                        colorIdx: Math.floor(Math.random() * pinkRedHeartColors.length),
+                        offX: Math.random() * 100, offY: Math.random() * 100, offZ: Math.random() * 100,
+                        delay: Math.random() * 1.5
+                    });
+                }
+            }
+
+            bgHearts = Array.from({length: 60}, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                size: Math.random() * 0.7 + 0.2, 
+                speed: Math.random() * 2.2 + 1.0, 
+                colorIdx: Math.floor(Math.random() * pinkRedHeartColors.length),
+                wobble: Math.random() * Math.PI * 2,
+                wobbleSpeed: Math.random() * 0.03 + 0.015
+            }));
+        }
+
+        function initBearSphere() {
+            bearSphereParticles = [];
+            const sphereR = 520; 
+            const numBears = 32; // 🐻 Số lượng ảnh vừa vặn (32 tấm) dàn đều không bị đè chèn
+            const goldenRatio = (1 + Math.sqrt(5)) / 2;
+            let imgCounter = 0;
+
+            for (let i = 0; i < numBears; i++) {
+                // Thuật toán Fibonacci Sphere giúp phân bổ các điểm cách đều nhau tuyệt đối trên mặt cầu
+                let theta = 2 * Math.PI * i / goldenRatio;
+                let phi = Math.acos(1 - 2 * (i + 0.5) / numBears);
+
+                let targetX = sphereR * Math.sin(phi) * Math.cos(theta);
+                let targetY = sphereR * Math.cos(phi); 
+                let targetZ = sphereR * Math.sin(phi) * Math.sin(theta);
+
+                let radiusStart = 2800 + Math.random() * 1200; 
+                let randomTheta = Math.random() * Math.PI * 2;
+                let randomPhi = Math.acos((Math.random() * 2) - 1);
+                
+                let startX = radiusStart * Math.sin(randomPhi) * Math.cos(randomTheta);
+                let startY = radiusStart * Math.cos(randomPhi);
+                let startZ = radiusStart * Math.sin(randomPhi) * Math.sin(randomTheta);
+
+                let currentImgIdx = imgCounter % loadedImages.length;
+                imgCounter++;
+
+                bearSphereParticles.push({
+                    x: startX, y: startY, z: startZ,
+                    targetX: targetX, targetY: targetY, targetZ: targetZ,
+                    size: 32, // Size ảnh vừa vặn để các bức ảnh giữ khoảng cách lý tưởng
+                    imgIndex: currentImgIdx,
+                    flySpeed: 0.012 + Math.random() * 0.008, 
+                    rotSpeedX: (Math.random() - 0.5) * 0.0025,
+                    rotSpeedY: (Math.random() - 0.5) * 0.003
+                });
+            }
+
+            // 💌 TỐC ĐỘ RƠI CHẬM MƯỢT CỦA BỨC THƯ
+            fallingLetters = Array.from({length: 8}, () => ({
+                x: Math.random() * width,
+                y: Math.random() * -height - 100,
+                speedY: Math.random() * 0.5 + 0.4,
+                wobble: Math.random() * Math.PI * 2,
+                wobbleSpeed: Math.random() * 0.02 + 0.01,
+                size: 30,
+                message: letterMessages[Math.floor(Math.random() * letterMessages.length)]
+            }));
+        }
+
+        function createParticle(r, theta, phi, isRed = false) {
+            let x = r * Math.sin(phi) * Math.cos(theta);
+            let y = r * Math.cos(phi);
+            let z = r * Math.sin(phi) * Math.sin(theta);
+            return {
+                x: x, y: y, z: z,
+                baseX: x, baseY: y, baseZ: z,
+                vx: 0, vy: 0, vz: 0,
+                size: Math.random() * 0.6 + 0.35, 
+                isRed: isRed,
+                colorIdx: isRed ? Math.floor(Math.random() * redHeartColors.length) : Math.floor(Math.random() * pinkRedHeartColors.length),
+                offX: Math.random() * 100, offY: Math.random() * 100, offZ: Math.random() * 100,
+                delay: Math.random() * 1.5
+            };
+        }
+
+        window.addEventListener('resize', resize);
+
+        function startInteract(clientX, clientY) {
+            clickValid = true; 
+
+            if (state === 'PLAYING') {
+                isDragging = true;
+                dragStartX = lastMouseX = clientX;
+                dragStartY = lastMouseY = clientY;
+                return;
+            }
+
+            if (Math.hypot(clientX - btnX, clientY - btnY) < 40) {
+                isHoldingButton = true;
+                isDragging = false;
+                if (state === 'WAITING') {
+                    bgMusic.play().catch(e => console.log(e));
+                }
+            } else {
+                isDragging = true;
+                isHoldingButton = false;
+                dragStartX = lastMouseX = clientX;
+                dragStartY = lastMouseY = clientY;
+            }
+        }
+
+        function openLetter(msg) {
+            const contentEl = document.getElementById('letterContent');
+            contentEl.innerText = ""; 
+            document.getElementById('letterModal').classList.add('show');
+
+            if (typingInterval) clearInterval(typingInterval);
+
+            const characters = [...msg]; 
+            let index = 0;
+
+            typingInterval = setInterval(() => {
+                if (index < characters.length) {
+                    contentEl.innerText += characters[index];
+                    index++;
+                } else {
+                    clearInterval(typingInterval);
+                }
+            }, 55); 
+        }
+
+        function closeLetter() {
+            if (typingInterval) clearInterval(typingInterval);
+            document.getElementById('letterModal').classList.remove('show');
+        }
+
+        function moveInteract(clientX, clientY) {
+            if (isDragging) {
+                let dx = clientX - lastMouseX;
+                let dy = clientY - lastMouseY;
+                
+                if (Math.hypot(clientX - dragStartX, clientY - dragStartY) > 5) {
+                    clickValid = false; 
+                }
+
+                camRotY += dx * 0.008; 
+                camRotX -= dy * 0.008; 
+                lastMouseX = clientX;
+                lastMouseY = clientY;
+            }
+        }
+
+        function endInteract() {
+            if (state === 'WAITING' && isHoldingButton) {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+            }
+
+            if (state === 'PLAYING' && showBearsStage && clickValid) {
+                let clickedLetter = false;
+                fallingLetters.forEach(letter => {
+                    let currentX = letter.x + Math.sin(letter.wobble) * 20;
+                    if (Math.abs(dragStartX - currentX) < 50 && Math.abs(dragStartY - letter.y) < 25) {
+                        clickedLetter = true;
+                        openLetter(letter.message);
+                    }
+                });
+
+                if (!clickedLetter && !isInsideSphere) {
+                    isInsideSphere = true;
+                    camRotX = 0; 
+                    insideSphereStartTime = Date.now();
+                    bearsScattered = false;
+                }
+            }
+            isHoldingButton = false;
+            isDragging = false;
+        }
+
+        window.addEventListener('mousedown', e => startInteract(e.clientX, e.clientY));
+        window.addEventListener('mousemove', e => moveInteract(e.clientX, e.clientY));
+        window.addEventListener('mouseup', endInteract);
+        window.addEventListener('touchstart', e => startInteract(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
+        window.addEventListener('touchmove', e => moveInteract(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
+        window.addEventListener('touchend', endInteract);
+
+        function getTextTargets(text) {
+            let tCanvas = document.createElement('canvas');
+            tCanvas.width = width; tCanvas.height = height;
+            let tCtx = tCanvas.getContext('2d');
+            tCtx.clearRect(0, 0, width, height);
+            
+            let fontSize = Math.min(width / 6.5, 80); 
+            tCtx.font = `bold ${fontSize}px "Pacifico", cursive`;
+            tCtx.fillStyle = '#ffffff'; 
+            tCtx.textAlign = 'center';
+            tCtx.textBaseline = 'middle';
+
+            let lines = text.split('\n');
+            let lineH = fontSize * 1.3;
+            let startY = height / 2 - (lines.length - 1) * lineH / 2;
+            lines.forEach((line, i) => tCtx.fillText(line, width / 2, startY + i * lineH));
+
+            let imgData = tCtx.getImageData(0, 0, width, height).data;
+            let targets = [];
+            let step = 14; 
+
+            for (let y = 0; y < height; y += step) {
+                for (let x = 0; x < width; x += step) {
+                    if (imgData[(y * width + x) * 4 + 3] > 128) { 
+                        targets.push({ x: x - width / 2, y: y - height / 2, z: 0 });
+                    }
+                }
+            }
+            return targets;
+        }
+
+        function getHeartTargets(numTargets, scale) {
+            let targets = [];
+            let maxAttempts = numTargets * 4;
+            let attempts = 0;
+            
+            while (targets.length < numTargets && attempts < maxAttempts) {
+                attempts++;
+                let t = Math.random() * Math.PI * 2;
+                let rFill = Math.cbrt(Math.random()); 
+                
+                let x = 30 * Math.pow(Math.sin(t), 3) * rFill;
+                let y = -(26 * Math.cos(t) - 10 * Math.cos(2*t) - 3 * Math.cos(3*t) - Math.cos(4*t)) * rFill;
+                
+                let pixelX = x * scale;
+                let pixelY = y * scale - 15;
+
+                if (Math.abs(pixelX) < width * 0.28 && Math.abs(pixelY) < height * 0.2) {
+                    continue; 
+                }
+
+                targets.push({ x: pixelX, y: pixelY, z: (Math.random() - 0.5) * 120 });
+            }
+            return targets;
+        }
+
+        let elapsedTime = 0;
+
+        function animate() {
+            ctx.fillStyle = 'rgba(3, 3, 3, 0.4)'; 
+            ctx.fillRect(0, 0, width, height);
+
+            let time = Date.now() * 0.001;
+            elapsedTime = state === 'PLAYING' ? (Date.now() - startTime) / 1000 : 0;
+
+            if (state === 'PLAYING' && !isDragging) {
+                camRotY += 0.0015;
+            }
+
+            if (state === 'PLAYING' && !isExploded && elapsedTime >= 8.0) {
+                isExploded = true;
+                explodeStartTime = Date.now();
+                particles3D.forEach(p => {
+                    p.vx = (Math.random() - 0.5) * 35;
+                    p.vy = (Math.random() - 0.5) * 35;
+                    p.vz = (Math.random() - 0.5) * 20;
+                    p.isText = false;
+                });
+            }
+
+            if (isExploded) {
+                let timeSinceExplode = (Date.now() - explodeStartTime) / 1000;
+                if (timeSinceExplode <= 1.0) {
+                    globalAlphaVal = 1.0 - timeSinceExplode; 
+                } else {
+                    globalAlphaVal = 0; 
+                    if (!showBearsStage) {
+                        showBearsStage = true;
+                        isInsideSphere = false; 
+                        initBearSphere(); 
+                    }
+                }
+            } else {
+                globalAlphaVal = 1.0;
+            }
+
+            ctx.globalCompositeOperation = 'screen';
+            bgHearts.forEach(s => {
+                s.y -= s.speed;
+                s.wobble += s.wobbleSpeed;
+                let currentX = s.x + Math.sin(s.wobble) * 15; 
+                if (s.y < -30) { s.y = height + 30; s.x = Math.random() * width; }
+                let size = s.size * 16;
+                ctx.globalAlpha = 0.3; 
+                ctx.drawImage(pinkRedHeartSprites[s.colorIdx % pinkRedHeartSprites.length], currentX - size/2, s.y - size/2, size, size);
+            });
+            ctx.globalAlpha = 1.0;
+            ctx.globalCompositeOperation = 'source-over';
+
+            let wiggleX = 0, wiggleY = 0;
+            if (state === 'PLAYING' && !isExploded) {
+                wiggleX = Math.sin(time * 1.5) * 6; 
+                wiggleY = Math.cos(time * 1.2) * 4; 
+            }
+
+            let sinX = Math.sin(camRotX), cosX = Math.cos(camRotX);
+            let sinY = Math.sin(camRotY), cosY = Math.cos(camRotY);
+            let renderedParticles = [];
+
+            let boundX = width * 0.7, boundY = height * 0.7, boundZ = 1000;
+
+            for(let i=0; i<particles3D.length; i++) {
+                let p = particles3D[i];
+                
+                if (state === 'WAITING') {
+                    p.x = p.baseX + Math.sin(time * 1.8 + p.offX) * 25;
+                    p.y = p.baseY + Math.cos(time * 1.5 + p.offY) * 25;
+                    p.z = p.baseZ + Math.sin(time * 2.0 + p.offZ) * 25;
+                } else if (state === 'PLAYING') {
+                    if (isExploded && !showBearsStage) {
+                        p.x += p.vx; p.y += p.vy; p.z += p.vz;
+                        if (Math.abs(p.x) > boundX) p.vx *= -1;
+                        if (Math.abs(p.y) > boundY) p.vy *= -1;
+                        if (Math.abs(p.z) > boundZ) p.vz *= -1;
+                    } else if (!isExploded && elapsedTime > p.delay) {
+                        let tX = p.targetX + (p.isText ? wiggleX : Math.sin(time + p.offX) * 2);
+                        let tY = p.targetY + (p.isText ? wiggleY : Math.cos(time + p.offY) * 2);
+                        p.x += (tX - p.x) * 0.08;
+                        p.y += (tY - p.y) * 0.08;
+                        p.z += (p.targetZ - p.z) * 0.08;
+                    }
+                }
+
+                if (!showBearsStage) {
+                    let y1 = p.y * cosX - p.z * sinX;
+                    let z1 = p.y * sinX + p.z * cosX;
+                    let x2 = p.x * cosY + z1 * sinY;
+                    let z2 = -p.x * sinY + z1 * cosY;
+                    renderedParticles.push({ p: p, x2: x2, y2: y1, z2: z2 });
+                }
+            }
+
+            renderedParticles.sort((a,b) => b.z2 - a.z2);
+            let focalLength = 800; 
+            let textDrawn = false;
+            let baseScale = focalLength / (focalLength + 1000);
+
+            function draw3DText() {
+                if (state === 'PLAYING' && elapsedTime > 1.5 && !isExploded) {
+                    ctx.save();
+                    textScale += (1 - textScale) * 0.1; 
+                    let textAlpha = Math.min(1, (elapsedTime - 1.5) / 1.5);
+                    ctx.globalAlpha = textAlpha * 0.95 * globalAlphaVal;
+
+                    let fontSize = Math.min(width / 6.5, 80) * textScale;
+                    ctx.font = `bold ${fontSize}px "Pacifico", cursive`;
+                    
+                    let gradient = ctx.createLinearGradient(0, -100, 0, 100);
+                    gradient.addColorStop(0, '#ff99cc');
+                    gradient.addColorStop(0.5, '#ff1a75');
+                    gradient.addColorStop(1, '#ff0033');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.shadowColor = '#ff1a75';
+                    ctx.shadowBlur = 25 * textScale;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    
+                    ctx.translate(cx, cy);
+                    ctx.transform(cosY, 0, sinX * sinY, cosX, 0, 0); 
+                    ctx.translate(wiggleX * baseScale, wiggleY * baseScale);
+                    
+                    let lines = CUSTOM_TEXT.split('\n');
+                    let lineH = fontSize * 1.3;
+                    let startY = 0 - (lines.length - 1) * lineH / 2;
+                    lines.forEach((line, i) => ctx.fillText(line, 0, startY + i * lineH));
+                    ctx.restore();
+                }
+                textDrawn = true;
+            }
+
+            ctx.globalCompositeOperation = 'screen';
+            if (!showBearsStage) {
+                for(let i=0; i<renderedParticles.length; i++) {
+                    let rp = renderedParticles[i];
+                    if (!textDrawn && rp.z2 <= 0) {
+                        ctx.globalCompositeOperation = 'source-over';
+                        draw3DText();
+                        ctx.globalCompositeOperation = 'screen';
+                    }
+
+                    let scale = focalLength / (focalLength + rp.z2 + 1000);
+                    if (scale > 0 && scale < 5) {
+                        let px = cx + rp.x2 * scale;
+                        let py = cy + rp.y2 * scale;
+                        let sizeMultiplier = (state === 'PLAYING' && !isExploded) ? (rp.p.isText ? 24 : 10) : 15; 
+                        let s = rp.p.size * scale * sizeMultiplier;
+                        let sprite = (state === 'WAITING' && rp.p.isRed) ? redHeartSprites[rp.p.colorIdx % redHeartSprites.length] : pinkRedHeartSprites[rp.p.colorIdx % pinkRedHeartSprites.length];
+
+                        ctx.save();
+                        ctx.globalAlpha = globalAlphaVal; 
+                        ctx.drawImage(sprite, px - s/2, py - s/2, s, s);
+                        ctx.restore();
+                    }
+                }
+                if (!textDrawn) draw3DText();
+            }
+
+            if (showBearsStage) {
+                if (isInsideSphere && !bearsScattered && (Date.now() - insideSphereStartTime > 6000)) {
+                    bearsScattered = true;
+                }
+
+                let bearRenderList = [];
+                let innerOffsetZ = isInsideSphere ? 0 : 1100; 
+
+                bearSphereParticles.forEach(b => {
+                    if (bearsScattered) {
+                        let cosY = Math.cos(b.rotSpeedY), sinY = Math.sin(b.rotSpeedY);
+                        let x1 = b.x * cosY - b.z * sinY;
+                        let z1 = b.x * sinY + b.z * cosY;
+
+                        let cosX = Math.cos(b.rotSpeedX), sinX = Math.sin(b.rotSpeedX);
+                        let y2 = b.y * cosX - z1 * sinX;
+                        let z2_new = b.y * sinX + z1 * cosX;
+
+                        b.x = x1;
+                        b.y = y2;
+                        b.z = z2_new;
+                    } else {
+                        b.x += (b.targetX - b.x) * b.flySpeed;
+                        b.y += (b.targetY - b.y) * b.flySpeed;
+                        b.z += (b.targetZ - b.z) * b.flySpeed;
+                    }
+
+                    let y1 = b.y * cosX - b.z * sinX;
+                    let z1 = b.y * sinX + b.z * cosX;
+                    let x2 = b.x * cosY + z1 * sinY;
+                    let z2 = -b.x * sinY + z1 * cosY - innerOffsetZ;
+
+                    let t_y1 = b.targetY * cosX - b.targetZ * sinX;
+                    let t_z1 = b.targetY * sinX + b.targetZ * cosX;
+                    let t_z2 = -b.targetX * sinY + t_z1 * cosY - innerOffsetZ;
+                    let targetScale = focalLength / (focalLength + t_z2);
+
+                    bearRenderList.push({ b: b, x2: x2, y2: y1, z2: z2, targetScale: targetScale });
+                });
+
+                bearRenderList.sort((a, b) => b.z2 - a.z2);
+
+                bearRenderList.forEach(item => {
+                    let scale = focalLength / (focalLength + item.z2); 
+                    if (scale > 0 && scale < 15) {
+                        let px = cx + item.x2 * scale;
+                        let py = cy + item.y2 * scale;
+                        
+                        let s;
+                        if (bearsScattered) {
+                            s = item.b.size * (isInsideSphere ? 2.2 : 1.3);
+                        } else {
+                            let distToTarget = Math.hypot(item.b.x - item.b.targetX, item.b.y - item.b.targetY, item.b.z - item.b.targetZ);
+                            let renderScale = (distToTarget > 15) ? item.targetScale : scale;
+                            s = item.b.size * renderScale * (isInsideSphere ? 2.5 : 1.3); 
+                        }
+
+                        ctx.save();
+                        ctx.filter = "contrast(110%) saturate(120%) brightness(85%)";
+                        ctx.globalAlpha = 1.0; 
+                        let currentImg = loadedImages[item.b.imgIndex];
+                        if (currentImg && currentImg.complete) {
+                            ctx.drawImage(currentImg, px - s/2, py - s/2, s, s);
+                        }
+                        ctx.restore();
+                    }
+                });
+
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.save();
+                ctx.font = '13px "Courier New", monospace';
+                ctx.fillStyle = '#ff99cc';
+                ctx.shadowColor = '#ff1a75';
+                ctx.shadowBlur = 10;
+                ctx.textAlign = 'center';
+                if (!isInsideSphere) {
+                    ctx.fillText("✨ Kéo thả để xoay 360 độ ngắm nhìn - Click để xem ✨", cx, height - 50);
+                } else if (!bearsScattered) {
+                    let countDown = Math.max(0, Math.ceil(6 - (Date.now() - insideSphereStartTime) / 1000));
+                    ctx.fillText(`✨ Bạn đang ở bên trong! Các chú gấu sẽ bay lượn sau ${countDown}s ✨`, cx, height - 50);
+                } else {
+                    ctx.fillText("✨ Các chú gấu đang dạo chơi quay quanh màn hình ✨", cx, height - 50);
+                }
+                ctx.restore();
+
+                fallingLetters.forEach(letter => {
+                    letter.y += letter.speedY;
+                    letter.wobble += letter.wobbleSpeed;
+                    let drawX = letter.x + Math.sin(letter.wobble) * 20;
+
+                    if (letter.y > height + 60) {
+                        letter.y = -60;
+                        letter.x = Math.random() * width;
+                    }
+
+                    ctx.save();
+                    
+                    let flap = Math.sin(time * 7 + letter.wobble * 3) * 6; 
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                    ctx.shadowColor = '#ff3385';
+                    ctx.shadowBlur = 10;
+
+                    ctx.beginPath();
+                    ctx.moveTo(drawX - 10, letter.y - 2);
+                    ctx.bezierCurveTo(drawX - 28, letter.y - 18 + flap, drawX - 35, letter.y + 6 - flap, drawX - 10, letter.y + 6);
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.moveTo(drawX + 10, letter.y - 2);
+                    ctx.bezierCurveTo(drawX + 28, letter.y - 18 + flap, drawX + 35, letter.y + 6 - flap, drawX + 10, letter.y + 6);
+                    ctx.fill();
+
+                    ctx.font = `${letter.size}px serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.shadowColor = '#ff1a75';
+                    ctx.shadowBlur = 8;
+                    ctx.fillText("💌", drawX, letter.y);
+
+                    ctx.font = '11px "Quicksand", sans-serif';
+                    ctx.fillStyle = '#ff99cc';
+                    ctx.fillText("click vào đây", drawX, letter.y + 24);
+                    ctx.restore();
+                });
+            }
+
+            ctx.globalCompositeOperation = 'source-over';
+
+            if (state === 'PLAYING' && elapsedTime > 3.0 && !isExploded) {
+                let remainingTime = Math.max(0, Math.ceil(8.0 - elapsedTime));
+                ctx.save();
+                ctx.globalAlpha = Math.min(1, (elapsedTime - 3.0) * 1.5) * 0.9 * globalAlphaVal;
+                ctx.font = '14px "Courier New", monospace';
+                ctx.fillStyle = '#ff99cc';
+                ctx.shadowColor = '#ff1a75';
+                ctx.shadowBlur = 12;
+                ctx.textAlign = 'center';
+                ctx.fillText(`✨ Tự động mở sau ${remainingTime}s ✨`, hintX, hintY + 45);
+                ctx.restore();
+            }
+
+            if (state === 'WAITING') {
+                if (isHoldingButton) {
+                    holdProgress += 2.0;
+                    if (holdProgress >= 100) {
+                        state = 'PLAYING';
+                        startTime = Date.now();
+                        isExploded = false;
+                        showBearsStage = false;
+                        globalAlphaVal = 1.0;
+                        isInsideSphere = false;
+                        bearsScattered = false;
+                        
+                        bgMusic.play().catch(err => console.log("Lỗi tự động phát nhạc:", err));
+
+                        let textTargets = getTextTargets(CUSTOM_TEXT);
+                        let heartScale = Math.min(width, height) / 20; 
+                        let remainingParticles = particles3D.length - textTargets.length;
+                        let heartTargets = getHeartTargets(remainingParticles > 0 ? remainingParticles : 0, heartScale);
+
+                        let textIndex = 0, heartIndex = 0;
+                        particles3D.forEach((p) => {
+                            if (textIndex < textTargets.length) {
+                                let t = textTargets[textIndex];
+                                p.targetX = t.x / baseScale;
+                                p.targetY = t.y / baseScale;
+                                p.targetZ = 0; 
+                                p.isText = true;
+                                textIndex++;
+                            } else if (heartIndex < heartTargets.length) {
+                                let h = heartTargets[heartIndex];
+                                p.targetX = h.x;
+                                p.targetY = h.y;
+                                p.targetZ = h.z; 
+                                p.isText = false;
+                                p.colorIdx = Math.floor(Math.random() * pinkRedHeartColors.length);
+                                heartIndex++;
+                            }
+                            p.delay = Math.random() * 2.0; 
+                        });
+                    }
+                } else {
+                    holdProgress = Math.max(0, holdProgress - 4);
+                }
+
+                ctx.beginPath();
+                ctx.arc(btnX, btnY, 25, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                if (holdProgress > 0) {
+                    ctx.beginPath();
+                    ctx.arc(btnX, btnY, 25, -Math.PI / 2, -Math.PI / 2 + (holdProgress / 100) * Math.PI * 2);
+                    ctx.strokeStyle = '#ff1a75';
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.arc(btnX, btnY, 15 * (1 - holdProgress/100), 0, Math.PI * 2);
+                    ctx.fillStyle = '#ff1a75';
+                    ctx.fill();
+                }
+
+                ctx.font = '14px "Courier New", monospace';
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.fillText("giữ để tiếp tục", btnX, btnY + 45);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        resize();
+        animate();
+    </script>
+</body>
+</html>
